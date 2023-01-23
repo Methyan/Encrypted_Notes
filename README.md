@@ -1,1 +1,1 @@
-# Hidden_Notes
+# Encrypted_Notes
