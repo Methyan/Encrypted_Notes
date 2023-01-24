@@ -2,10 +2,12 @@
 #include <stdlib.h>
 
 /*
- * Tanımlayıcı karakter dizini:  </13-?>
+ * Tanımlayıcı karakter dizini:  >-?<
  */
 
 
+
+// BAGLI LISTE:
 typedef struct liste {
     char ch;
     struct liste *next;
@@ -13,33 +15,71 @@ typedef struct liste {
 
 
 
-int DosyayaYazma (void);
-void Liste_Yazdirma (liste *root);
+// FONKSİYONLAR:
+void NotGirdisi (liste *root, int NotAdedi);
+void ListeSifrele  (liste *root);
+liste * DosyaListele (void);
+void FullListeYazdirma (liste *root);
+void ListeDosyala (liste *root);
+void ListeSifreCoz (liste *root);
+int DosyaVarlikKontrol (void);
+int NoteCounter (liste *root);
+
+int DosyaSilme (void);
 void SifresizDosyaOkuma (void);
-int NoteCounter (void);
-void SifreliDosyaOkuma (void);
+
 
 int main() {
     int secim;
 
     girdi1:
-    printf("[1] Okuma \n[2] Yazma \n[3] Not Sil \n[4] Sifresiz Okuma \n--> Yapacaginiz işlemi giriniz: ");
+    printf("[1] Okuma \n[2] Yazma \n[3] Not Sil \n[4] Sifresiz Okuma \n[5] Dosya Listele - Liste Yazdir \n[6]Dosya Varlık Kontrol\n--> Yapacaginiz işlemi giriniz: ");
     scanf("%d", &secim);
     getchar();
 
     if (secim == 1) { // Okuma yapılacak:
-        SifreliDosyaOkuma();
+        liste *root = DosyaListele();
+        ListeSifreCoz(root);
+        int NotAdedi = NoteCounter(root);
+        printf("\n\nNot Adedi: %d\n", NotAdedi);
+        FullListeYazdirma(root);
     }
 
-    else if (secim == 2) { // Dosyalara yazılacak:
-        DosyayaYazma();
+    else if (secim == 2) { // Dosyaya yazılacak:
+        if (DosyaVarlikKontrol()) { // Dosya Var ise:
+            printf("\nDosya Var'a girdi\n");
+            liste *root = DosyaListele();
+            ListeSifreCoz(root);
+            int NotAdedi = NoteCounter(root);
+            printf("\nNot adedi: %d\n" ,NotAdedi);
+            NotGirdisi(root, NotAdedi);
+            ListeSifrele(root);
+            ListeDosyala(root);
+        }
+        else { // Dosya Yok ise:
+            printf("\nDosya Yok'a girdi\n");
+            liste *root = malloc(sizeof(liste));
+            NotGirdisi(root, 0);
+            ListeSifrele(root);
+            ListeDosyala(root);
+        }
     }
 
-    else if (secim == 3) { // Notlar silinecek
+    else if (secim == 3) { // Notlar silinecek:
+        DosyaSilme();
     }
 
     else if (secim == 4) { // Sifresiz dosya okuma:
         SifresizDosyaOkuma();
+    }
+
+    else if (secim == 5) {
+        liste *root = DosyaListele();
+        FullListeYazdirma(root);
+    }
+
+    else if (secim == 6) {
+        printf("\n\nDosya var mi: %d\n", DosyaVarlikKontrol());
     }
 
     else {
@@ -48,25 +88,26 @@ int main() {
     }
 
 
-
     return 0;
 }
 
 
 
+/*      FONKSİYON NOTU:      */
+// Eğer dosya varsa, dosya listeye atanacak.
+// listenin rootu bu fonksiyına gönderilecek.
+// Eğer daha önceden dosya yoksa, root'a malloc gönderilecek.
 
-
-int DosyayaYazma (void) {
-    int NotAdedi = NoteCounter();
-    printf("\n\nNot adedi: %d\n\n", NotAdedi);
-
-    FILE *dosya1 = fopen("qwe.qwe", "a+");
-
-
-// Not girdisinin alınması:
-    liste *root = (liste *) malloc(sizeof(liste));
+void NotGirdisi (liste *root, int NotAdedi) {  // Kullanıcıdan not girdisi alacak ve listeye yazacak:
     liste *iter = root;
+    if (NotAdedi > 0) {
+        while (iter->next != NULL) iter = iter->next;
+        iter->next = malloc(sizeof(liste));
+        iter = iter->next;
+    }
+
     printf("\n\n--> Cumlenizi giriniz. Cikmak icin TAB+ENTER\n--------------------------------------------------------------------\n");
+    int counter1 = 0;
     char karakter;
     while (1) {
         karakter = getchar();
@@ -83,120 +124,157 @@ int DosyayaYazma (void) {
             }
         }
         iter->ch = karakter;
+        counter1++;
         iter->next = malloc(sizeof(liste));
         iter = iter->next;
     }
 
-
-
-// Cyrpting & File Write:
-    iter = root;
-    int counter = 0;
-    while (iter->next != NULL) {
-        counter++;
-        if (counter % 3 == 0) {
-            char nmbr = iter->ch;
-            nmbr += (counter % 7);
-            printf("%d ", nmbr);
-            fprintf(dosya1, "%c", nmbr);
-        }
-        else if (counter % 3 == 1) {
-            char nmbr = iter->ch;
-            nmbr += ((counter % 4) + 1);
-            printf("%d ", nmbr);
-            fprintf(dosya1, "%c", nmbr);
-        }
-        else if (counter % 3 == 2) {
-            char nmbr = iter->ch;
-            nmbr += (counter + 31);
-            printf("%d ", nmbr);
-            fprintf(dosya1, "%c", nmbr);
-        }
-        iter = iter->next;
-    }
-
-
     // TKD'de fonksiyondan dönen sayaca göre sıra numarası verilecek (? işareti yerine).
     // 5. birime atanan değer Not adedinin karakter karşılığının bir fazlasıdır.
-    // TANIMLAYICI KARAKTER DIZISI:  </13-?>   (? işareti yarine sıra numarası gelecek)
+    // TANIMLAYICI KARAKTER DIZISI:  >-?<   (? işareti yarine sıra numarası gelecek).
 
-    char TKD[10] = {'<', '/', '1', '3', '-', NotAdedi + 49, '>'};
-    fprintf(dosya1, "\n%s\n\n", TKD);
-
-
-    fclose(dosya1);
-    return 1;
+    char TKD[] = {'>', '-', NotAdedi + 49, '<'};
+    for (int i = 0; i < 4; i++) {
+        iter->ch = TKD[i];
+        iter->next = malloc(sizeof(liste));
+        iter = iter->next;
+    }
 }
 
 
 
 
+void ListeSifrele  (liste *root) {
+// Cyrpting & File Write:
+    liste *iter = root;
+    int counter2 = 0;
+    while (iter->next != NULL) {
+        counter2++;
+        if (counter2 % 3 == 0) {
+            char ch = iter->ch;
+            ch += (counter2 % 7);
+            iter->ch = ch;
+        }
+        else if (counter2 % 3 == 1) {
+            char ch = iter->ch;
+            ch += ((counter2 % 4) + 1);
+            iter->ch = ch;
+        }
+        else if (counter2 % 3 == 2) {
+            char ch = iter->ch;
+            ch += (counter2 + 31);
+            iter->ch = ch;
+        }
+        iter = iter->next;
+    }
+}
 
-int NoteCounter (void) {
-    FILE *dosya1 = fopen("qwe.qwe", "a+");
-    rewind(dosya1);
-    int counter = 0;
+
+
+liste * DosyaListele (void) {
+    FILE *dosya1 = fopen("qwe.qwe", "r");
+    liste *root = malloc(sizeof(liste));
+    liste *iter = root;
+
     while (!feof(dosya1)) {
         char karakter = fgetc(dosya1);
-        if (karakter == '<') {
-            karakter = fgetc(dosya1);
-            if (karakter == '/') {
-                karakter = fgetc(dosya1);
-                if (karakter == '1') {
-                    karakter = fgetc(dosya1);
-                    if (karakter == '3') {
-                        karakter = fgetc(dosya1);
-                        if (karakter == '-') {
-                            fgetc(dosya1);
-                            karakter = fgetc(dosya1);
-                            if (karakter == '>') {
-                                counter++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        iter->ch = karakter;
+        iter->next = malloc(sizeof(liste));
+        iter = iter->next;
     }
     fclose(dosya1);
+    return root;
+}
+
+
+
+
+int DosyaVarlikKontrol (void) {
+    if (fopen("qwe.qwe", "r")) {
+        return 1; // Dosya var.
+    }
+    return 0; // Dosya yok.
+}
+
+
+
+
+void FullListeYazdirma (liste *root) {
+    printf("\n\nListenin icindekiler:\n");
+    while (root->next != NULL) {
+        printf("%c", root->ch);
+        root = root->next;
+    }
+    printf("\n\n");
+}
+
+
+
+
+void ListeDosyala (liste *root) {
+    liste *iter = root;
+    FILE *dosya1 = fopen("qwe.qwe", "w+");
+    while (iter->next != NULL) {
+        fprintf(dosya1, "%c", iter->ch);
+        iter = iter->next;
+    }
+}
+
+
+
+
+void ListeSifreCoz (liste *root) {
+    liste *iter = root;
+    int cyrptCounter = 0;
+    while (iter->next != NULL) {
+        cyrptCounter++;
+        if (cyrptCounter % 3 == 0) {
+            char ch = iter->ch;
+            ch -= (cyrptCounter % 7);
+            iter->ch = ch;
+        }
+        else if (cyrptCounter % 3 == 1) {
+            char ch = iter->ch;
+            ch -= ((cyrptCounter % 4) + 1);
+            iter->ch = ch;
+        }
+        else if (cyrptCounter % 3 == 2) {
+            char ch = iter->ch;
+            ch -= (cyrptCounter + 31);
+            iter->ch = ch;
+        }
+        iter = iter->next;
+    }
+}
+
+
+
+
+int NoteCounter (liste *root) { // DİKKAT: Sadece şifresi çözülmüş listeleri okur:
+    // TKD:  >-?<
+    liste *iter = root;
+    int counter = 0;
+    while (iter->next != NULL) { // TKD sayacı:
+        if (iter->ch == '>' && iter->next->ch == '-' && iter->next->next->next->ch == '<'){
+            counter++;
+        }
+        iter = iter->next;
+    }
     return counter;
 }
 
 
-// İleriki aşamalarda istenilen notu göstermesi için notu numarası parametresi alabilir.
-void SifreliDosyaOkuma (void) {
-    printf("\n\nSifre Cozuldu.\nNotunuz:\n--------------------------------------------------------------------\n");
-    FILE *dosya1 = fopen("qwe.qwe", "r+");
-    int counter = 0;
-    while (!feof(dosya1)) {
-        counter++;
-        if (counter % 3 == 0) {
-            char nmbr;
-            fscanf(dosya1, "%c", &nmbr);
-            if (nmbr == 0) break;
-            nmbr -= (counter % 7);
-            printf("%c", nmbr);
-        }
-        else if (counter % 3 == 1) {
-            char nmbr;
-            fscanf(dosya1, "%c", &nmbr);
-            if (nmbr == 0) break;
-            nmbr -= ((counter % 4) + 1);
-            printf("%c", nmbr);
-        }
-        else if (counter % 3 == 2) {
-            char nmbr;
-            fscanf(dosya1, "%c", &nmbr);
-            if (nmbr == 0) break;
-            nmbr -= (counter + 31);
-            printf("%c", nmbr);
-        }
+
+
+int DosyaSilme (void) {
+    if (fopen("qwe.qwe", "r")) {
+        remove("qwe.qwe");
+        printf("\n\nDosya Silindi.\n");
+        return 1;
     }
-    fclose(dosya1);
-    printf("\n--------------------------------------------------------------------\n");
+    printf("Dosya bulunamadi!");
+    return 0;
 }
-
-
 
 
 
@@ -206,19 +284,7 @@ void SifresizDosyaOkuma (void) {
     while (!feof(dosya1)) {
         char karakter;
         fscanf(dosya1, "%c", &karakter);
-        printf("%d ", karakter);
+        printf("%c", karakter);
     }
     fclose(dosya1);
-}
-
-
-
-
-void Liste_Yazdirma (liste *root) {
-    printf("\n\nListenin icindekiler:\n");
-    while (root->next!= NULL) {
-        printf("%c", root->ch);
-        root = root->next;
-    }
-    printf("\n\n");
 }
