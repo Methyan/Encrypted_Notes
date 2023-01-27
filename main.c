@@ -24,6 +24,8 @@ int DosyaVarlikKontrol (void);
 int NoteCounter (liste *root);
 void NotOzelTamYazdir (liste *root);
 void NotTekYazdir (liste *root, int NotNo);
+void NotBaslikOlustur (liste *root, int NotAdedi);
+void NotTumBaslikYazdir (liste *root);
 int DosyaSilme (void);
 void SifresizDosyaOkuma (void);
 
@@ -37,6 +39,8 @@ void Menu5Fonk (void);
 void Menu6Fonk (void);
 void Menu7Fonk (void);
 void Menu8Fonk (void);
+void Menu9Fonk (void);
+void Menu10Fonk (void);
 
 
 int main() {
@@ -44,11 +48,12 @@ int main() {
 
     girdiMain:
     printf("[1] Okuma \n[2] Yazma \n[3] Not Sil \n[4] Sifresiz Okuma \n[5] Dosya Listele - Liste Yazdir \n"
-           "[6] Dosya Varlık Kontrol \n[7] Not Ozel Tam Yazdir \n[8] Not Tek Yazdir \n--> Yapacaginiz işlemi giriniz: ");
+           "[6] Dosya Varlık Kontrol \n[7] Not Ozel Tam Yazdir \n[8] Not Tek Yazdir \n"
+           "[9] Not Baslik Olustur \n[10] Not Basliklarinin Tumunu Goster \n--> Yapacaginiz işlemi giriniz: ");
     scanf("%d", &secim);
     getchar();
 
-    if (secim == 1) Menu1Fonk();         // Okuma yapılacak:
+    if (secim == 1) Menu1Fonk();         // Okuma yapılacak Ne var ne yok yazdırır.
 
     else if (secim == 2) Menu2Fonk();    // Dosyaya yazılacak:
 
@@ -60,9 +65,13 @@ int main() {
 
     else if (secim == 6) Menu6Fonk();    // Dosya Varlık Kontrol
 
-    else if (secim == 7) Menu7Fonk();    // Not Ozel Tam Yazdır
+    else if (secim == 7) Menu7Fonk();    // Not Ozel Tam Yazdır. Tüm notları yazıdır. (Başlıkları olmadan)
 
-    else if (secim == 8) Menu8Fonk();    // İsteenilen notu tek olarak yazdırır.
+    else if (secim == 8) Menu8Fonk();    // İsteenilen notu tek olarak yazdırır. (Başlık olmadan)
+
+    else if (secim == 9) Menu9Fonk();    // Not için başlık oluşturacak.
+
+    else if (secim == 10) Menu10Fonk();  // Bütün notların başlıklarını yazdıracak.
 
     else {
         printf("Hatali bir giris yaptiniz!");
@@ -261,6 +270,18 @@ void NotOzelTamYazdir (liste *root) { // Tüm nootları TKD olmadan yazdırıyor
             }
             printf("\n\n-> %d. Not\n", counter++);
         }
+
+// BASLIK ATLAMA KOMUTU:
+        if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') { // başlık TKD'sine gelirse:
+            while (iter->next != NULL) { // Başlık atlanacak ve yazdırılmayacak.
+                iter = iter->next;
+                if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') {
+                    iter = iter->next->next->next;
+                    break;
+                }
+            }
+        }
+
         printf("%c", iter->ch);
         iter = iter->next;
         if (iter == NULL) break;
@@ -293,6 +314,17 @@ void NotTekYazdir (liste *root, int NotNo) {
         iter = iter->next;
     }
 
+// Baslık atlama komutu:
+    if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') { // başlık TKD'sine gelirse:
+        while (iter->next != NULL) { // Başlık atlanacak ve yazdırılmayacak.
+            iter = iter->next;
+            if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') {
+                iter = iter->next->next->next;
+                break;
+            }
+        }
+    }
+
     yazdir:
 
     while (iter->next != NULL) {
@@ -305,6 +337,101 @@ void NotTekYazdir (liste *root, int NotNo) {
     }
 }
 
+
+
+
+void NotBaslikOlustur (liste *root, int DosyaVarlik) {
+    liste *iter = root;
+    if (DosyaVarlik == 1) { // Daha önceden not oluşturulduysa, Notun sonuna gidecek:
+        while (iter->next != NULL) iter = iter->next;
+        iter->next = malloc(sizeof(liste));
+        iter = iter->next;
+    }
+
+    liste *tempRoot = malloc(sizeof(liste));
+    liste *tempIter = tempRoot;
+
+    girdi2:
+
+    printf("Lutfen basliginizi giriniz (Max 30 karakter): ");
+    int counter = 0;
+    while (1) {
+        char karakter = getchar();
+        if (karakter == 9) {
+            karakter = getchar();
+            if (karakter == 10) {
+                printf("--------------------------------------------------------------------\nYazım bitirildi.\n");
+                break;
+            }
+            else {
+                tempIter->ch = 9;
+                tempIter->next = malloc(sizeof(liste));
+                tempIter = tempIter->next;
+                counter++;
+            }
+        }
+        tempIter->ch = karakter;
+        tempIter->next = malloc(sizeof(liste));
+        tempIter = tempIter->next;
+        counter++;
+    }
+    tempIter = NULL;
+
+    if (counter > 30) {
+        printf("\n\n!--> Girdiginiz baslik 30 karakterden fazla.\nLutfen daha kisa bir baslik giriniz.\n\n\n");
+        tempRoot = malloc(sizeof(liste));
+        tempIter = tempRoot;
+        goto girdi2; // Başlık sorgusuna gönderiyor.
+    }
+    else { // Başlık uygun ise:
+        tempIter = tempRoot;
+        char TKD2[] = {'>', '|', '<'};
+        for (int i = 0; i < 3; i++) { // TKD2 Writer:
+            iter->ch = TKD2[i];
+            iter->next = malloc(sizeof(liste));
+            iter = iter->next;
+        }
+        while (tempIter->next != NULL) {
+            iter->ch = tempIter->ch;
+            iter->next = malloc(sizeof(liste));
+            iter = iter->next;
+            tempIter = tempIter->next;
+        }
+        for (int i = 0; i < 3; i++) { // TKD2 Writer:
+            iter->ch = TKD2[i];
+            iter->next = malloc(sizeof(liste));
+            iter = iter->next;
+        }
+        iter = NULL;
+        free(tempRoot);
+    }
+}
+
+
+
+
+void NotTumBaslikYazdir (liste *root) {
+    liste *iter = root;
+    // TKD2:  >|<
+    int counter = 1;
+    printf("\n\nTum basliklar:\n");
+    while (iter->next != NULL) {
+        if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') {
+            printf("\n%d->", counter++);
+            iter = iter->next->next->next;
+            while (iter->next != NULL) {
+                if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<'){
+                    iter = iter->next->next;
+                    break;
+                }
+                printf("%c", iter->ch);
+                iter = iter->next;
+            }
+
+        }
+        iter = iter->next;
+    }
+}
 
 
 
@@ -331,6 +458,8 @@ void SifresizDosyaOkuma (void) {
     }
     fclose(dosya1);
 }
+
+
 
 
 
@@ -392,4 +521,17 @@ void Menu8Fonk (void) {
         NotTekYazdir(root, NotNo);
     }
     else printf("\n\nDosya Bulunamadi!\n");
+}
+void Menu9Fonk (void) {
+    liste *rootBaslik = malloc(sizeof(liste));
+    NotBaslikOlustur(rootBaslik, 0);
+    FullListeYazdirma(rootBaslik);
+}
+void Menu10Fonk (void) {
+    if (DosyaVarlikKontrol()) {
+        liste *root = DosyaListele();
+        ListeSifreCoz(root);
+        NotTumBaslikYazdir(root);
+    }
+    else printf("\n\nDosya Bulunamadi\n");
 }
