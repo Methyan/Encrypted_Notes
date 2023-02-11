@@ -3,7 +3,7 @@
 
 /*
  * Tanımlayıcı karakter dizini1:  >-?<
- * TKD2:                         >|<
+ * TKD2:                          >|<
  */
 
 
@@ -33,6 +33,7 @@ void NotGenelTamOkuma (liste *root);
 void toUpperCase (liste *root);
 void ListeSifirla (liste *root);
 int NotTekSil (liste *root, int NotNo);
+int ListeKontrol (liste *root);
 
 
 // GELISTIRICI MENU FONKSIYONLARI:
@@ -51,6 +52,7 @@ void GelistiriciMenu12Fonk (void);
 void GelistiriciMenu13Fonk (void);
 void GelistiriciMenu14Fonk (void);
 void GelistiriciMenu15Fonk (void);
+void GelistiriciMenu16Fonk (void);
 
 
 // ANA MENU FONKSIYONLARI:
@@ -116,12 +118,12 @@ int main() {
 
         girdiGelisticiMenu:
 
-        printf("\n[1] Okuma \n[2] Yazma \n[3] Not Sil \n[4] Sifresiz Okuma \n[5] Dosya Listele - Liste Yazdir \n"
+        printf("\n[1] Okuma \n[2] Yazma \n[3] Dosyalari Sil \n[4] Sifresiz Okuma \n[5] Dosya Listele - Liste Yazdir \n"
                "[6] Dosya Varlık Kontrol \n[7] Not Ozel Tam Yazdir \n[8] Not Tek Yazdir \n"
                "[9] Not Baslik Olustur (Nota müdahil) \n[A] Basliklarinin Tumunu Goster \n"
                "[B] Not Genel Tam Yazdır \n[C] Girilen basligin harflerini buyutuyor (TR haric)\n"
                "[D] Girdi Al yaz-oku (sifresiz) \n[E] TKD'siz dosyaya Yazım \n"
-               "[F] Tek Not Sil \n--> Yapacaginiz işlemi giriniz: ");
+               "[F] Tek Not Sil \n[G] Liste Kontrol \n--> Yapacaginiz işlemi giriniz: ");
         secim = getchar();
         while (1) {
             char temp = getchar();
@@ -157,6 +159,8 @@ int main() {
         else if (secim == 69) GelistiriciMenu14Fonk();   // Girilen yazıyı direkt listeye yazacak.
 
         else if (secim == 70) GelistiriciMenu15Fonk();   // Sıra numarası girilen notu siler.
+
+        else if (secim == 71) GelistiriciMenu16Fonk();   // Liste'yi her haliyle kontrol ediyor.
 
         else {
             printf("Hatali bir giris yaptiniz!");
@@ -821,7 +825,7 @@ int NotTekSil (liste *root, int NotNo) {
                     printf("\n\nTum dosyalar silindi!\n");
                     return 3;
                 }
-                // root'a silmeden önceki son eleman gelecek.
+                    // root'a silmeden önceki son eleman gelecek.
                 else {
                     iter = iter->next->next->next->next;
                     root->ch = iter->ch;
@@ -902,6 +906,210 @@ int NotTekSil (liste *root, int NotNo) {
     return 1;
 }
 
+
+
+
+int ListeKontrol (liste *root) {
+    liste *iter = root;
+
+    // REturn 2: Son tkd1 hatali.
+    // Return 3: ERROR CODE !
+
+
+    // First TKD2 control:
+    if (iter->ch != '>') {
+        printf("\n\n--> Listenin ilk karakteri eksik.\n--> Liste silinmeli.\n--> Sonlandirildi!\n");
+        return 3;
+    }
+
+
+    // Last TKD1 control:
+    while (iter != NULL) {
+        if (iter->next->next->next->next->next == NULL) {
+            if (iter->ch == '>' && iter->next->ch == '-' && iter->next->next->next->ch == '<') {
+                printf("\n--> Son TKD1 yerli yerinde.\n");
+                break;
+            }
+            else {
+                printf("\n\n--> SON TKD1 HATALI !!!\n--> Liste Silinmeli.\n--> Sonlandirildi!\n");
+                return 2;
+            }
+        }
+        iter = iter->next;
+    }
+    iter = root;
+
+
+    // CHARACTER COUNTER:
+    int ch_counter = 0;
+    while (iter != NULL) {
+        ch_counter++;
+        iter = iter->next;
+    }
+    iter = root;
+    printf("--> Liste karakter sayisi: %d\n", ch_counter);
+
+
+    // TKD1 COUNTER:
+    int TKD1_counter = 0;
+    while (iter != NULL) {
+        if (iter->ch == '>' && iter->next->ch == '-' && iter->next->next->next->ch == '<') {
+            TKD1_counter++;
+        }
+        iter = iter->next;
+    }
+    iter = root;
+
+
+    // TKD2 COUNTER:
+    int TKD2_counter = 0;
+    while (iter != NULL) {
+        if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') {
+            TKD2_counter++;
+        }
+        iter = iter->next;
+    }
+    iter = root;
+    printf("--> TKD1 adedi: %d\t TKD2 adedi: %d\n", TKD1_counter, TKD2_counter);
+
+
+                                            // DETAYLI İNCELEME \\
+                                            // DETAYLI İNCELEME \\
+                                            // DETAYLI İNCELEME \\
+                                            // DETAYLI İNCELEME \\
+
+    int TKD1_char3_counter = 0, TKD1_char4_counter = 0, seamless_TKD1_counter = 0;
+    int TKD1_2_char2_counter = 0, TKD2_char3_counter = 0, seamless_TKD2_counter = 0;
+    //printf("\n--> Baslik sayisi ile Govde sayisi uyusmadi!!!\n--> TKD Detay kontrolu baslatildi:\n");
+
+
+    // TKD 2. 3. VE 4. KARAKTER KONTROLU:
+    while (iter != NULL) {
+        if (iter->ch == '>') {
+            if (iter->next != NULL) {
+                iter = iter->next;
+                if (iter->ch == '|') { // True ise TKD2 Algılandı:
+                    if (iter->next != NULL) {
+                        iter = iter->next;
+                        if (iter->ch == '<') {
+                            // TKD2'de harhangi bir sorun yok.
+                            seamless_TKD2_counter++;
+                        }
+                        else {
+                            TKD2_char3_counter++;
+                            if (iter->ch == 0) {
+                                printf("\n\n!--> ! Dikkat: TKD2 bitmeden NULL karakterine gelindi!\n");
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                        break;
+                    }
+                }
+                else { // Hata var veya TKD1 Algılandı:
+                    if (iter->ch == '-') {
+                        if (iter->next != NULL) {
+                            iter = iter->next;
+                            if (!(iter->ch == '<' || iter->ch == '>' || iter == NULL)) {
+                                if (iter->next != NULL) {
+                                    iter = iter->next;
+                                    if (iter->ch == '<') {
+                                        seamless_TKD1_counter++;
+                                    }
+                                    else {
+                                        // tkd1, 4. karakter yanlış
+                                        TKD1_char4_counter++;
+                                        if (iter->ch == 0) {
+                                            printf("\n\n!--> ! Dikkat: listeye NULL karakteri atanmis!\n");
+                                        }
+                                    }
+                                }
+                                else {
+                                    printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                                    break;
+                                }
+                            }
+                            else {
+                                // tkd1, 3. karakteri hatali!
+                                TKD1_char3_counter++;
+                            }
+                        }
+                        else {
+                            printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                            break;
+                        }
+                    }
+                    else {
+                        TKD1_2_char2_counter++;
+                        if (iter->ch == 0) {
+                            printf("\n\n!--> ! Dikkat: TKD1 bitmeden NULL karakterine gelindi!\n");
+                        }
+                        printf("\n--> TKD'nin 2. karakteri algılanmadı!\n--> Veya TKD değil!\n");
+                    }
+                }
+            }
+            else {
+                printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                break;
+            }
+        }
+        iter = iter->next;
+    }
+    iter = root;
+
+
+    // TKD 1. KARAKTER KONTROLU:
+    int TKD1_char1_counter = 0, TKD2_char1_counter = 0;
+    while (iter != NULL) {
+        if (iter->ch != '>') {
+            if (iter->next != NULL) {
+                iter = iter->next;
+                if (iter->ch == '|') { // TKD2 Algılandı:
+                    if (iter->next != NULL) {
+                        iter = iter->next;
+                        if (iter->ch == '<') {
+                            TKD1_char1_counter++;
+                        }
+                    }
+                    else {
+                        printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                        break;
+                    }
+                }
+                else if (iter->ch == '-') { // TKD1 Algılandı:
+                    if (iter->next != NULL && iter->next->next != NULL) {
+                        iter = iter->next->next;
+                        if (iter->ch == '<') {
+                            TKD2_char1_counter++;
+                        }
+                    }
+                    else {
+                        printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                        break;
+                    }
+                }
+            }
+            else {
+                printf("\n\n--> Liste, TKD ortasinda kesildi.\n--> Veya listeye yanlis NULL atanmis!\n");
+                break;
+            }
+        }
+        iter = iter->next;
+    }
+
+    int total_fault = TKD1_char1_counter + TKD2_char1_counter + TKD1_2_char2_counter + TKD1_char3_counter + TKD1_char4_counter + TKD2_char3_counter;
+    printf("\n-> Toplam Hata Sayisi: %d \nHatalar:", total_fault);
+    printf("\n--> TKD1_char1 eksik adet: %d\n--> TKD2_char1 eksik adet: %d", TKD1_char1_counter, TKD2_char1_counter);
+    printf("\n--> TKD1_2_char2 eksik adet: %d\n--> TKD1_char3 eksik adet: %d", TKD1_2_char2_counter, TKD1_char3_counter);
+    printf("\n--> TKD1_char4 eksik adet: %d\n--> TKD2_char3 eksik adet: %d\n", TKD1_char4_counter, TKD2_char3_counter);
+
+    // iter = root;
+
+
+    return total_fault;
+}
 
 
 
@@ -1170,4 +1378,13 @@ void GelistiriciMenu15Fonk (void) {
         ListeDosyala(root);
     }
     else printf("\n\n--> Silinebilecek herhangi bir not yok!\n");
+}
+void GelistiriciMenu16Fonk (void) {
+    if (DosyaVarlikKontrol()) {
+        liste *root = DosyaListele();
+        ListeSifreCoz(root);
+        ListeKontrol(root);
+        printf("\nProgram sonlandi.\n");
+    }
+    else printf("\n--> Dosya bulunamadi!!!\n");
 }
