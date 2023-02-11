@@ -6,4 +6,4 @@
 It can also perform operations such as adding and deleting notes. <br/>
 Program language: Turkish </h4>
 <br />
-Currently stable but will continue to be developed.
+-> Currently stable but will continue to be developed.
