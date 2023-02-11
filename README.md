@@ -5,3 +5,5 @@
 <h4> Encrypts and files the entered note. <br/>
 It can also perform operations such as adding and deleting notes. <br/>
 Program language: Turkish </h4>
+<br />
+Currently stable but will continue to be developed.
