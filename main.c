@@ -87,16 +87,47 @@ int main() {
 
         else if (secim == 50) {
             system("clear");
-            Menu2Fonk();
+            while (1) {
+                int control = Menu2Fonk();
+                if (control == 3 || control == 0) {
+                    system("clear");
+                    break;
+                }
+                printf("\nDevam etmek icin ENTER'a basin.");
+                getchar();
+                system("clear");
+            }
         }              // Seçilen notu veya tüm notları yazdırır.      Menu-2
 
         else if (secim == 51) {
             system("clear");
-            int control = Menu3Fonk();
-            if (control == 1) printf("\n-> Not silindi.\n\n");
-            if (control == 2) {
-                printf("--> Degisiklerin uygulanmasi icin program kapatildi!\n\n");
-                return 0;
+            while (1) {
+                int control = Menu3Fonk();
+                if (control == 0) {
+                    system("clear");
+                    break;
+                }
+                else if (control == 1) {
+                    printf("\n-> Not silindi.\n\n");
+                    printf("\nDevam etmek icin ENTER'a basin.");
+                    getchar();
+                    system("clear");
+                }
+                else if (control == 2) {
+                    system("clear");
+                    printf("--> Degisiklerin uygulanmasi icin program kapatildi!\n\n");
+                    // Windows için getchar yazılacak.
+                    return 0;
+                }
+                else if (control == 3) {
+                    system("clear");
+                    break;
+                }
+                else {
+                    printf("\nDevam etmek icin ENTER'a basin.");
+                    getchar();
+                    system("clear");
+                }
             }
         }              // Sıra numarası girilen notu siler.            Menu-3
 
@@ -163,9 +194,11 @@ int main() {
 
         else printf("\n--> Hatali bir giris yaptiniz!\n--> Tekrar deneyin.\n");
 
+        /*
         printf("\nDevam etmek icin ENTER'a basin.");
         getchar();
         system("clear");
+        */
     }
 
     return 0;
@@ -815,6 +848,7 @@ int NotTekSil (liste *root, int NotNo) {
      *  0 --> Not silinemedi veya hata olustu.
      *  1 --> Not silindi.
      *  2 --> Tüm dosyalar silindi.
+     *  4 --> Not bulunamadi.
      */
 
     liste *iter = root;
@@ -862,10 +896,9 @@ int NotTekSil (liste *root, int NotNo) {
         iter = iter->next;
     }
 
-    //printf("\niter: %c", iter->ch);
     if (control == 0) {
         printf("\n\n--> Not bulunamadi\n");
-        return 0;
+        return 4;
     }
 
     // Silinecek notun başlığının basina gelindi.
@@ -1149,6 +1182,8 @@ int Menu2Fonk (void) {
      *      0 --> Herhangi bir işlem yapılmadı.
      *      1 --> Tüm notlar yazdirildi.
      *      2 --> Tek not yazdırıldı.
+     *      3 --> Geri donus yapilacak.
+     *      4 --> Hatali not numarasi girildi.
      */
 
     if (DosyaVarlikKontrol()) {
@@ -1161,7 +1196,8 @@ int Menu2Fonk (void) {
             printf("\nBaslik adedi: %d,  Not adedi: %d\n", BaslikAdedi, NotAdedi);
             return 0;
         }
-        printf("\n\nNotun numarasini giriniz (Hepsini yazdir: TAB+ENTER): ");
+        printf("\n\n--> Geri donmek icin 0 giriniz.");
+        printf("\nNotun numarasini giriniz (Hepsini yazdir: TAB+ENTER): ");
 
         // Secim girdisi alma -BASLANGIC- :
         char NotNo = getchar();
@@ -1170,7 +1206,7 @@ int Menu2Fonk (void) {
             if (karakter == 10) {
                 // Tüm notlar yazdırılacak:
 
-            // Terminal temizleme:
+                // Terminal temizleme:
                 system("clear");
 
                 printf("\n--> Tum notlar:");
@@ -1188,9 +1224,13 @@ int Menu2Fonk (void) {
         NotNo -= 48;
         // Secim girdisi alma -BITIS- !
 
+        // Geri Dönülecek:
+        if (NotNo == 0) return 3;
+
         if (NotNo > NotAdedi || NotNo < 0) {
-            printf("\n\n--> Girdiğiniz numarada not yok!\n\n");
-            return 0;
+            system("clear");
+            printf("\n--> Girdiğiniz numarada not yok!\n\n");
+            return 4;
         }
 
         // Terminal temizleme:
@@ -1198,8 +1238,13 @@ int Menu2Fonk (void) {
         NotTekYazdir(root, NotNo);
         ListeSifirla(root);
     }
-    else printf("\n\n--> Kaydedilmis Not Yok!\n");
-    return 0;
+    else {
+        printf("\n\n--> Kaydedilmis Not Yok!\n");
+        printf("\nDevam etmek icin ENTER'a basin.");
+        getchar();
+        return 0;
+    }
+    return 1;
 }
 int Menu3Fonk (void) {
 
@@ -1207,6 +1252,8 @@ int Menu3Fonk (void) {
      *      0 --> Herhangi bir işlem yapilmadi.
      *      1 --> Gerekli islemler doğru bir şekilde yapildi.
      *      2 --> Islem yapildi fakat dosyalar silindi. Program kapatilacak.
+     *      3 --> Geri Donus yapilacak.
+     *      4 --> Not bulunamadi.
      */
 
     if (DosyaVarlikKontrol()) {
@@ -1214,7 +1261,10 @@ int Menu3Fonk (void) {
         ListeSifreCoz(root);
         NotTumBaslikYazdir(root);
 
-        printf("\n\nHangi notu silmek istersiniz (Hepsini Sil: TAB+ENTER): ");
+        printf("\n\n--> Geri donmek icin 0 giriniz.");
+        printf("\nHangi notu silmek istersiniz (Hepsini Sil: TAB+ENTER): ");
+
+        // NotNo girdisi baslangic.
         char NotNo = getchar();
         if (NotNo == 9) { // Hepsini silecek.
             char karakter = getchar();
@@ -1234,8 +1284,12 @@ int Menu3Fonk (void) {
             if (karakter == 10) break;
         }
         NotNo -= 48;
+        // NotNo girdisi sonu.
 
         system("clear");
+
+        // Geri donus yap:
+        if (NotNo == 0) return 3;
 
         int control = NotTekSil(root, NotNo);
         if (control == 1) {
@@ -1246,6 +1300,8 @@ int Menu3Fonk (void) {
     }
     else {
         printf("\n\n--> Silinebilecek herhangi bir not yok!\n");
+        printf("\nDevam etmek icin ENTER'a basin.");
+        getchar();
         return 0;
     }
 }
