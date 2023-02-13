@@ -68,7 +68,7 @@ int main() {
 
     while (1) {
 
-        printf("\n[1] Not Yaz \n[2] Not Goruntule \n[3] Not Sil \n[8] Gelistirici Secenekleri \n[9] Cikis \n"
+        printf("\n[1] Not Yaz \n[2] Not Goruntule \n[3] Not Sil \n[X] Gelistirici Secenekleri \n[9] Cikis \n"
                "--> Hangi menuye gireceksiniz: ");
         char secim = getchar();
         while (1) {
@@ -115,7 +115,7 @@ int main() {
                 }
                 else if (control == 2) {
                     system("clear");
-                    printf("--> Degisiklerin uygulanmasi icin program kapatildi!\n\n");
+                    printf("\n--> Degisiklerin uygulanmasi icin program kapatildi!\n\n");
                     // Windows için getchar yazılacak.
                     return 0;
                 }
@@ -131,7 +131,7 @@ int main() {
             }
         }              // Sıra numarası girilen notu siler.            Menu-3
 
-        else if (secim == 56) {
+        else if (secim == 88) {
             while (1) {
                 printf("\n[1] Okuma \n[2] Yazma \n[3] Dosyalari Sil \n[4] Sifresiz Okuma \n[5] Dosya Listele - Liste Yazdir \n"
                        "[6] Dosya Varlık Kontrol \n[7] Not Ozel Tam Yazdir \n[8] Not Tek Yazdir \n"
@@ -194,11 +194,6 @@ int main() {
 
         else printf("\n--> Hatali bir giris yaptiniz!\n--> Tekrar deneyin.\n");
 
-        /*
-        printf("\nDevam etmek icin ENTER'a basin.");
-        getchar();
-        system("clear");
-        */
     }
 
     return 0;
@@ -300,9 +295,9 @@ void ListeSifrele  (liste *root) {
 
 
 liste * DosyaListele (void) {
-    FILE *dosya1 = fopen("qwe.qwe", "r");
-    FILE *dosya2 = fopen("asd.asd", "r");
-    FILE *dosya3 = fopen("zxc.zxc", "r");
+    FILE *dosya1 = fopen("/Users/Shared/.qwe.qwe", "r");
+    FILE *dosya2 = fopen("/Users/Shared/.asd.asd", "r");
+    FILE *dosya3 = fopen("/Users/Shared/.zxc.zxc", "r");
 
     liste *root = malloc(sizeof(liste));
     liste *iter = root;
@@ -373,13 +368,13 @@ liste * DosyaListele (void) {
 
 int DosyaVarlikKontrol (void) {
     int counter = 0;
-    if (fopen("qwe.qwe", "r")) {
+    if (fopen("/Users/Shared/.qwe.qwe", "r")) {
         counter++;
     }
-    if (fopen("asd.asd", "r")) {
+    if (fopen("/Users/Shared/.asd.asd", "r")) {
         counter++;
     }
-    if (fopen("zxc.zxc", "r")) {
+    if (fopen("/Users/Shared/.zxc.zxc", "r")) {
         counter++;
     }
     if (counter == 3) return 1; // Dosyalar mevcut.
@@ -407,9 +402,9 @@ void FullListeYazdirma (liste *root) {
 
 void ListeDosyala (liste *root) {
     liste *iter = root;
-    FILE *dosya1 = fopen("qwe.qwe", "w+");
-    FILE *dosya2 = fopen("asd.asd", "w+");
-    FILE *dosya3 = fopen("zxc.zxc", "w+");
+    FILE *dosya1 = fopen("/Users/Shared/.qwe.qwe", "w+");
+    FILE *dosya2 = fopen("/Users/Shared/.asd.asd", "w+");
+    FILE *dosya3 = fopen("/Users/Shared/.zxc.zxc", "w+");
 
     int counter = 0, Q_counter = 0, A_counter = 0, Z_counter = 0;
     while (iter != NULL) {
@@ -566,7 +561,7 @@ void NotTekYazdir (liste *root, int NotNo) {
         else iter = iter->next;
     }
 
-    printf("\n---------------------------------- Baslik ------------------------------------\n");
+    printf("\n\n---------------------------------- Baslik ------------------------------------\n");
     while (iter->next != NULL) { // Başlık yazdırma:
         if (iter->ch == '>' && iter->next->ch == '|' && iter->next->next->ch == '<') {
             for (int i = 0; i < 3; i++) { // iter atlama dögüsü:
@@ -723,16 +718,16 @@ int NotTumBaslikYazdir (liste *root) {
 
 int DosyaSil (void) {
     int counter = 0;
-    if (fopen("qwe.qwe", "r")) {
-        remove("qwe.qwe");
+    if (fopen("/Users/Shared/.qwe.qwe", "r")) {
+        remove("/Users/Shared/.qwe.qwe");
         counter++;
     }
-    if (fopen("asd.asd", "r")) {
-        remove("asd.asd");
+    if (fopen("/Users/Shared/.asd.asd", "r")) {
+        remove("/Users/Shared/.asd.asd");
         counter++;
     }
-    if (fopen("zxc.zxc", "r")) {
-        remove("zxc.zxc");
+    if (fopen("/Users/Shared/.zxc.zxc", "r")) {
+        remove("/Users/Shared/.zxc.zxc");
         counter++;
     }
     if (counter == 3) {
@@ -859,9 +854,9 @@ int NotTekSil (liste *root, int NotNo) {
         while (iter->next != NULL) {
             if (iter->ch == '>' && iter->next->ch == '-' && iter->next->next->next->ch == '<') {
                 if (iter->next->next->next->next == NULL || iter->next->next->next->next->next == NULL) {
-                    if (fopen("qwe.qwe", "r")) remove("qwe.qwe");
-                    if (fopen("asd.asd", "r")) remove("asd.asd");
-                    if (fopen("zxc.zxc", "r")) remove("zxc.zxc");
+                    if (fopen("/Users/Shared/.qwe.qwe", "r")) remove("/Users/Shared/.qwe.qwe");
+                    if (fopen("/Users/Shared/.asd.asd", "r")) remove("/Users/Shared/.asd.asd");
+                    if (fopen("/Users/Shared/.zxc.zxc", "r")) remove("/Users/Shared/.zxc.zxc");
                     printf("\n\n--> Tum notlar ve dosyalar silindi!\n");
                     return 2;
                 }
