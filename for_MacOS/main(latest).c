@@ -6,7 +6,6 @@
  * TKD2:                          >|<
  */
 
-
 // BAGLI LISTE:
 typedef struct liste {
     char ch;
