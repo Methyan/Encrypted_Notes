@@ -6,6 +6,7 @@
  * TKD2:                          >|<
  */
 
+
 // BAGLI LISTE:
 typedef struct liste {
     char ch;
@@ -612,7 +613,7 @@ int NotBaslikOlustur (liste *root, int DosyaVarlik) {
 
     girdi2:
 
-    printf("-------------------------------- Baslik -----------------------------------\n");
+    printf("\n-------------------------------- Baslik -----------------------------------\n");
     char karakter = getchar();
     if (karakter == 9) {
         karakter = getchar();
