@@ -6,5 +6,4 @@
 It can also perform operations such as adding and deleting notes. <br/>
 Program language: Turkish </h4>
 <hr/>
-<h2> <b> Attention <b/> : This project is currently stable on MacOS and Windows. <br />
-Linux version will be released later. <h2 />
+<h2>This project is currently stable on MacOS and Windows. <br /> <h2 />
