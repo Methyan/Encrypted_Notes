@@ -1,8 +1,8 @@
-# Encrypted_Notes
+# Fast_Notes
 
-<h2> The encrypted notes app I wrote to pass the time. </h2> 
+<h2> The notes app I wrote to pass the time. </h2> 
 
-<h4> Encrypts and files the entered note. <br/>
+<h4> Changes the format of the entered note and saves it. <br/>
 It can also perform operations such as adding and deleting notes. <br/>
 Program language: Turkish </h4>
 <hr/>
