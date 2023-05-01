@@ -2,9 +2,10 @@
 #include <stdlib.h>
 
 /*
- * Tanımlayıcı karakter dizini1:  >-?<
- * TKD2:                          >|<
+ * TKD1:  >-?<
+ * TKD2:  >|<
  */
+
 
 // BAGLI LISTE:
 typedef struct liste {
@@ -191,7 +192,10 @@ int main() {
             break;
         }              // Cikis.
 
-        else printf("\n--> Hatali bir giris yaptiniz!\n--> Tekrar deneyin.\n");
+        else{
+            system("clear");
+            printf("\n--> Hatali bir giris yaptiniz!\n--> Tekrar deneyin.\n");
+        }
 
     }
 
@@ -617,6 +621,7 @@ int NotBaslikOlustur (liste *root, int DosyaVarlik) {
     if (karakter == 9) {
         karakter = getchar();
         if (karakter == 10) {
+            system("clear");
             printf("\n\n--> Baslik girmediniz!\n--> Yazim Iptal Edildi!\n\n");
             return 0;
         }
